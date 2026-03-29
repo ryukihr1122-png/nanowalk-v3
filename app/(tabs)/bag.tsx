@@ -215,55 +215,59 @@ export default function BagScreen() {
         </Text>
       </View>
 
-      {/* タブ */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 12, gap: 8 }}
-      >
-        {CATEGORY_CONFIG.map((cat) => {
-          const isActive = activeTab === cat.key;
-          const count = cat.key === "stone"
-            ? totalStones
-            : countByCategory(cat.key as ItemCategory);
-          return (
-            <Pressable
-              key={cat.key}
-              onPress={() => setActiveTab(cat.key)}
-              style={{
-                paddingHorizontal: 14, paddingVertical: 9,
-                borderRadius: 20,
-                backgroundColor: isActive ? "#00C9A7" : "#161628",
-                borderWidth: 1,
-                borderColor: isActive ? "#00C9A7" : "#1F1F38",
-                flexDirection: "row", alignItems: "center", gap: 5,
-              }}
-            >
-              <Text style={{ fontSize: 14 }}>{cat.emoji}</Text>
-              <Text style={{
-                color: isActive ? "#0D0D1A" : "#9090AA",
-                fontWeight: "700", fontSize: 12,
-              }}>
-                {cat.label}
-              </Text>
-              {count > 0 && (
-                <View style={{
-                  paddingHorizontal: 6, paddingVertical: 1,
-                  borderRadius: 8,
-                  backgroundColor: isActive ? "#0D0D1A30" : "#00C9A720",
+      {/* タブ（横スクロール・コンパクト） */}
+      <View style={{ height: 44, marginBottom: 8 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20, gap: 8, alignItems: "center" }}
+          style={{ flex: 1 }}
+        >
+          {CATEGORY_CONFIG.map((cat) => {
+            const isActive = activeTab === cat.key;
+            const count = cat.key === "stone"
+              ? totalStones
+              : countByCategory(cat.key as ItemCategory);
+            return (
+              <Pressable
+                key={cat.key}
+                onPress={() => setActiveTab(cat.key)}
+                style={{
+                  paddingHorizontal: 12, paddingVertical: 6,
+                  borderRadius: 16,
+                  backgroundColor: isActive ? "#00C9A7" : "#161628",
+                  borderWidth: 1,
+                  borderColor: isActive ? "#00C9A7" : "#1F1F38",
+                  flexDirection: "row", alignItems: "center", gap: 4,
+                  height: 32,
+                }}
+              >
+                <Text style={{ fontSize: 13 }}>{cat.emoji}</Text>
+                <Text style={{
+                  color: isActive ? "#0D0D1A" : "#9090AA",
+                  fontWeight: "700", fontSize: 12,
                 }}>
-                  <Text style={{
-                    color: isActive ? "#0D0D1A" : "#00C9A7",
-                    fontSize: 10, fontWeight: "900",
+                  {cat.label}
+                </Text>
+                {count > 0 && (
+                  <View style={{
+                    paddingHorizontal: 5, paddingVertical: 1,
+                    borderRadius: 6,
+                    backgroundColor: isActive ? "#0D0D1A30" : "#00C9A720",
                   }}>
-                    {count}
-                  </Text>
-                </View>
-              )}
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+                    <Text style={{
+                      color: isActive ? "#0D0D1A" : "#00C9A7",
+                      fontSize: 9, fontWeight: "900",
+                    }}>
+                      {count}
+                    </Text>
+                  </View>
+                )}
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      </View>
 
       {/* コンテンツ */}
       <ScrollView

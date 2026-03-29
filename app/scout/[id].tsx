@@ -479,6 +479,216 @@ function SliderGame({ onComplete }: { onComplete: (mult: number) => void }) {
 }
 
 // ============================================================
+// ミニゲーム: ダイス（3つ・運まかせ）
+// ============================================================
+const DICE_FACES = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+
+function DiceGame({ onComplete }: { onComplete: (mult: number) => void }) {
+  const [dice, setDice]   = useState([1, 1, 1]);
+  const [rolling, setRolling] = useState(false);
+  const [done, setDone]   = useState(false);
+  const [label, setLabel] = useState<ReturnType<typeof getResultLabel> | null>(null);
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handleRoll = useCallback(() => {
+    if (done || rolling) return;
+    setRolling(true);
+
+    let ticks = 0;
+    const totalTicks = 28; // 約0.45秒ロール
+    intervalRef.current = setInterval(() => {
+      ticks++;
+      setDice([
+        Math.ceil(Math.random() * 6),
+        Math.ceil(Math.random() * 6),
+        Math.ceil(Math.random() * 6),
+      ]);
+      if (ticks >= totalTicks) {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setRolling(false);
+        setDone(true);
+
+        // 加重乱数で結果決定（スキル不要の純粋な運）
+        const rand = Math.random();
+        const mult =
+          rand < 0.05 ? 2.0 :  // PERFECT 5%
+          rand < 0.30 ? 1.5 :  // GREAT   25%
+          rand < 0.60 ? 1.0 :  // GOOD    30%
+          rand < 0.82 ? 0.7 :  // MISS    22%
+                        0.5;   // BAD     18%
+
+        // ダイスの目を結果に合わせて演出
+        const finalDice =
+          mult >= 2.0 ? [6, 6, 6] :
+          mult >= 1.5 ? [6, 6, Math.ceil(Math.random() * 5)] :
+          mult >= 1.0 ? [5, 4, Math.ceil(Math.random() * 4) + 1] :
+          mult >= 0.7 ? [3, 2, Math.ceil(Math.random() * 3)] :
+                        [1, 1, Math.ceil(Math.random() * 2)];
+        setDice(finalDice);
+        setLabel(getResultLabel(mult));
+        setTimeout(() => onComplete(mult), 1000);
+      }
+    }, 16);
+  }, [done, rolling, onComplete]);
+
+  return (
+    <View style={{ alignItems: "center", gap: 24 }}>
+      <Text style={{ color: "#9090AA", fontSize: 13 }}>
+        🎲 ダイスをふって運試し！
+      </Text>
+
+      {/* 3つのダイス */}
+      <View style={{ flexDirection: "row", gap: 16 }}>
+        {dice.map((d, i) => (
+          <View key={i} style={{
+            width: 64, height: 64, borderRadius: 16,
+            backgroundColor: "#1F1F38",
+            borderWidth: 2,
+            borderColor: done && !rolling
+              ? (label?.color ?? "#1F1F38")
+              : rolling ? "#FFD70060" : "#2A2A44",
+            alignItems: "center", justifyContent: "center",
+          }}>
+            <Text style={{ fontSize: 36 }}>{DICE_FACES[d - 1]}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* ロールボタン */}
+      <Pressable
+        onPress={handleRoll}
+        disabled={done || rolling}
+        style={{
+          paddingHorizontal: 56, paddingVertical: 18,
+          borderRadius: 22,
+          backgroundColor: done ? "#1F1F38" : rolling ? "#FFD70060" : "#FFD700",
+          opacity: done ? 0.5 : 1,
+        }}
+      >
+        <Text style={{ color: "#0D0D1A", fontWeight: "900", fontSize: 20 }}>
+          {done ? "✓" : rolling ? "..." : "ROLL!"}
+        </Text>
+      </Pressable>
+
+      {label && !rolling && (
+        <View style={{ alignItems: "center" }}>
+          <Text style={{ color: label.color, fontWeight: "900", fontSize: 28 }}>{label.text}</Text>
+          <Text style={{ color: label.color, fontWeight: "700", fontSize: 16 }}>{label.sub}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ============================================================
+// ミニゲーム: カードめくり（3枚・運まかせ）
+// ============================================================
+function CardGame({ onComplete }: { onComplete: (mult: number) => void }) {
+  // 3枚のカードの結果をシャッフルして割り当て
+  const [cards] = useState(() => {
+    const rand = Math.random();
+    const hasPerfect = rand < 0.08; // 8%でPERFECT登場
+    const pool = hasPerfect
+      ? [2.0, 1.0, 0.5]
+      : [1.5, 1.0, 0.5];
+    // シャッフル
+    return [...pool].sort(() => Math.random() - 0.5);
+  });
+
+  const [flipped, setFlipped]   = useState<boolean[]>([false, false, false]);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [done, setDone]         = useState(false);
+
+  const handlePick = useCallback((idx: number) => {
+    if (done) return;
+    setDone(true);
+    setSelected(idx);
+    // 選んだカードをめくる
+    setFlipped([true, true, true]);
+    const mult = cards[idx];
+    setTimeout(() => onComplete(mult), 1200);
+  }, [done, cards, onComplete]);
+
+  const CARD_COLORS: Record<number, string> = {
+    2.0: "#FFD700", 1.5: "#00C9A7", 1.0: "#4FC3F7", 0.5: "#FF5252",
+  };
+  const CARD_LABELS: Record<number, string> = {
+    2.0: "PERFECT", 1.5: "GREAT", 1.0: "GOOD", 0.7: "MISS", 0.5: "BAD",
+  };
+
+  return (
+    <View style={{ alignItems: "center", gap: 24 }}>
+      <Text style={{ color: "#9090AA", fontSize: 13 }}>
+        🃏 1枚選んでめくろう！
+      </Text>
+
+      {/* 3枚のカード */}
+      <View style={{ flexDirection: "row", gap: 14 }}>
+        {cards.map((mult, i) => {
+          const isFlipped = flipped[i];
+          const isSelected = selected === i;
+          const color = CARD_COLORS[mult] ?? "#9090AA";
+          return (
+            <Pressable
+              key={i}
+              onPress={() => handlePick(i)}
+              disabled={done}
+              style={{
+                width: 72, height: 108, borderRadius: 14,
+                backgroundColor: isFlipped ? `${color}18` : "#1F1F38",
+                borderWidth: 2,
+                borderColor: isFlipped
+                  ? color
+                  : isSelected ? "#FFFFFF" : "#2A2A44",
+                alignItems: "center", justifyContent: "center",
+                opacity: done && !isSelected && !isFlipped ? 0.4 : 1,
+              }}
+            >
+              {isFlipped ? (
+                <View style={{ alignItems: "center", gap: 4 }}>
+                  <Text style={{ fontSize: 28 }}>
+                    {mult >= 2.0 ? "👑" : mult >= 1.5 ? "⭐" : mult >= 1.0 ? "🔷" : "💀"}
+                  </Text>
+                  <Text style={{ color, fontWeight: "900", fontSize: 11 }}>
+                    {CARD_LABELS[mult]}
+                  </Text>
+                  <Text style={{ color, fontWeight: "700", fontSize: 13 }}>
+                    ×{mult.toFixed(1)}
+                  </Text>
+                </View>
+              ) : (
+                <Text style={{ fontSize: 32 }}>🂠</Text>
+              )}
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {!done && (
+        <Text style={{ color: "#606080", fontSize: 12 }}>
+          タップして1枚選んでください
+        </Text>
+      )}
+
+      {done && selected !== null && (
+        <View style={{ alignItems: "center" }}>
+          {(() => {
+            const lbl = getResultLabel(cards[selected]);
+            return (
+              <>
+                <Text style={{ color: lbl.color, fontWeight: "900", fontSize: 28 }}>{lbl.text}</Text>
+                <Text style={{ color: lbl.color, fontWeight: "700", fontSize: 16 }}>{lbl.sub}</Text>
+              </>
+            );
+          })()}
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ============================================================
 // スカウト結果表示
 // ============================================================
 function ScoutResultView({
@@ -857,17 +1067,21 @@ export default function ScoutScreen() {
           <Text style={{ color: "#F0F0FF", fontWeight: "900", fontSize: 20,
             marginBottom: 16 }}>
             {miniGameType === "tap_timing" ? "タップタイミング" :
-             miniGameType === "roulette"   ? "ルーレット" : "スライダー"}
+             miniGameType === "slider"     ? "スライダー" :
+             miniGameType === "dice"       ? "ダイス" : "カードめくり"}
           </Text>
 
           {miniGameType === "tap_timing" && (
             <TapTimingGame onComplete={handleMiniGameComplete} />
           )}
-          {miniGameType === "roulette" && (
-            <RouletteGame onComplete={handleMiniGameComplete} />
-          )}
           {miniGameType === "slider" && (
             <SliderGame onComplete={handleMiniGameComplete} />
+          )}
+          {miniGameType === "dice" && (
+            <DiceGame onComplete={handleMiniGameComplete} />
+          )}
+          {miniGameType === "card" && (
+            <CardGame onComplete={handleMiniGameComplete} />
           )}
         </Animated.View>
       </SafeAreaView>
