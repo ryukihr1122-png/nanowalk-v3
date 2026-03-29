@@ -22,7 +22,8 @@
         "UIBackgroundModes": [
           "fetch",
           "processing"
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       },
       "appleTeamId": "9S45N65Y6Q"
     },
