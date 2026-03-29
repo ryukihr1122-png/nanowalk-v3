@@ -70,6 +70,12 @@
         "projectId": "fd42757e-18e8-4e49-92ca-c73566da78fb"
       }
     },
-    "owner": "ryukihhh"
+    "owner": "ryukihhh",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fd42757e-18e8-4e49-92ca-c73566da78fb"
+    }
   }
 }
