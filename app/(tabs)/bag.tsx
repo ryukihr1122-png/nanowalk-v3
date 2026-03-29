@@ -3,7 +3,7 @@
  * カテゴリ: ボール / フィールド / スカウト / ブースト / 特殊
  */
 
-import { View, Text, ScrollView, Pressable, Alert } from "react-native";
+import { View, Text, ScrollView, Pressable, Alert, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useState } from "react";
@@ -27,13 +27,23 @@ const STONE_BONUS: Record<StoneType, number> = {
   dull: 0, glow: 10, bright: 20, prism: 35,
 };
 
-const CATEGORY_CONFIG: { key: ItemCategory | "stone"; label: string; emoji: string }[] = [
-  { key: "stone",   label: "ストーン",     emoji: "🪨" },
-  { key: "gear",    label: "装備",         emoji: "📿" },
-  { key: "field",   label: "フィールド",   emoji: "🌿" },
-  { key: "scout",   label: "スカウト",     emoji: "🎯" },
-  { key: "boost",   label: "ブースト",     emoji: "⚡" },
-  { key: "special", label: "特殊",         emoji: "🌈" },
+// カテゴリアイコン画像
+const CATEGORY_ICONS: Record<string, ReturnType<typeof require>> = {
+  stone:   require("@/assets/ui-icons/【icon_tab_stone】.png"),
+  gear:    require("@/assets/ui-icons/【icon_tab_sort】.png"),
+  field:   require("@/assets/ui-icons/【icon_tab_field】.png"),
+  scout:   require("@/assets/ui-icons/【icon_tab_scout】.png"),
+  boost:   require("@/assets/ui-icons/【icon_tab_boost】.png"),
+  special: require("@/assets/ui-icons/【icon_tab_special】.png"),
+};
+
+const CATEGORY_CONFIG: { key: ItemCategory | "stone"; label: string }[] = [
+  { key: "stone",   label: "ストーン"   },
+  { key: "gear",    label: "装備"       },
+  { key: "field",   label: "フィールド" },
+  { key: "scout",   label: "スカウト"   },
+  { key: "boost",   label: "ブースト"   },
+  { key: "special", label: "特殊"       },
 ];
 
 // ---- ボールカード ----
@@ -233,16 +243,24 @@ export default function BagScreen() {
                 key={cat.key}
                 onPress={() => setActiveTab(cat.key)}
                 style={{
-                  paddingHorizontal: 12, paddingVertical: 6,
+                  paddingHorizontal: 10, paddingVertical: 6,
                   borderRadius: 16,
                   backgroundColor: isActive ? "#00C9A7" : "#161628",
                   borderWidth: 1,
                   borderColor: isActive ? "#00C9A7" : "#1F1F38",
-                  flexDirection: "row", alignItems: "center", gap: 4,
-                  height: 32,
+                  flexDirection: "row", alignItems: "center", gap: 5,
+                  height: 34,
                 }}
               >
-                <Text style={{ fontSize: 13 }}>{cat.emoji}</Text>
+                <Image
+                  source={CATEGORY_ICONS[cat.key]}
+                  style={{
+                    width: 20, height: 20,
+                    opacity: isActive ? 1 : 0.6,
+                    tintColor: isActive ? "#0D0D1A" : undefined,
+                  }}
+                  resizeMode="contain"
+                />
                 <Text style={{
                   color: isActive ? "#0D0D1A" : "#9090AA",
                   fontWeight: "700", fontSize: 12,
@@ -254,6 +272,7 @@ export default function BagScreen() {
                     paddingHorizontal: 5, paddingVertical: 1,
                     borderRadius: 6,
                     backgroundColor: isActive ? "#0D0D1A30" : "#00C9A720",
+                    minWidth: 16, alignItems: "center",
                   }}>
                     <Text style={{
                       color: isActive ? "#0D0D1A" : "#00C9A7",
