@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "NanoWalk",
+    "slug": "nanowalk",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D0D1A"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nanowalk.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "NanoWalkはあなたの歩数データを使ってゲームを進行します。",
+        "NSHealthUpdateUsageDescription": "NanoWalkはあなたの歩数データを記録します。",
+        "NSLocationWhenInUseUsageDescription": "現在地に基づいてレアモンスターの出現率が変わります（オプション）。",
+        "UIBackgroundModes": [
+          "fetch",
+          "processing"
+        ]
+      },
+      "appleTeamId": "FILL_AFTER_MEMBERSHIP_ACTIVATION"
+    },
+    "android": {
+      "package": "com.nanowalk.app",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.ACTIVITY_RECOGNITION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#00C9A7"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "現在地に基づいてレアモンスターが出現します。"
+        }
+      ],
+      "expo-background-fetch",
+      "expo-task-manager",
+      "expo-asset"
+    ],
+    "scheme": "nanowalk",
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {}
+  }
+}
