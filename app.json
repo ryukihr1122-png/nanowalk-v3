@@ -57,6 +57,10 @@
     "experiments": {
       "typedRoutes": true
     },
-    "extra": {}
+    "extra": {
+      "privacyPolicyUrl": "https://ryukihr1122-png.github.io/nanowalk-v3/privacy-policy.html",
+      "termsOfServiceUrl": "https://ryukihr1122-png.github.io/nanowalk-v3/terms-of-service.html",
+      "supportUrl": "https://ryukihr1122-png.github.io/nanowalk-v3/"
+    }
   }
 }
