@@ -31,7 +31,10 @@
       "versionCode": 1,
       "permissions": [
         "android.permission.ACTIVITY_RECOGNITION",
-        "android.permission.ACCESS_COARSE_LOCATION"
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK"
       ]
     },
     "plugins": [
@@ -60,7 +63,12 @@
     "extra": {
       "privacyPolicyUrl": "https://ryukihr1122-png.github.io/nanowalk-v3/privacy-policy.html",
       "termsOfServiceUrl": "https://ryukihr1122-png.github.io/nanowalk-v3/terms-of-service.html",
-      "supportUrl": "https://ryukihr1122-png.github.io/nanowalk-v3/"
-    }
+      "supportUrl": "https://ryukihr1122-png.github.io/nanowalk-v3/",
+      "router": {},
+      "eas": {
+        "projectId": "fd42757e-18e8-4e49-92ca-c73566da78fb"
+      }
+    },
+    "owner": "ryukihhh"
   }
 }
